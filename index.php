@@ -7,8 +7,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use report_up1synopsis\reporting;
+
 require('../../config.php');
-require_once(__DIR__ . '/locallib.php');
+//require_once(__DIR__ . '/locallib.php');
 
 global $DB, $PAGE, $OUTPUT;
  /* @var $PAGE moodle_page */
@@ -20,6 +22,7 @@ if ($layout != 'popup') {
 }
 
 $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$report = new reporting($id);
 $PAGE->set_course($course);
 
 $PAGE->set_url('/report/up1synopsis/index.php', array('id'=>$id));
@@ -40,10 +43,10 @@ echo $OUTPUT->header();
 echo "<h2>" . $pagename . "</h2>\n";
 
 echo '<div id="synopsis-bigbutton">' . "\n";
-html_button_join($course);
+echo $report->get_button_join();
 if ( has_capability('local/crswizard:supervalidator', context_system::instance()) )
 {
-    $urlboard = new moodle_url('/local/courseboard/view.php', array('id' => $course->id));
+    $urlboard = new moodle_url('/local/courseboard/view.php', ['id' => $course->id]);
     $icon = $OUTPUT->action_icon($urlboard, new pix_icon('i/settings', 'Afficher le tableau de bord'));
     echo $icon;
 }
@@ -56,12 +59,12 @@ echo '<div id="synopsis-summary">'
 
 echo '<div id="synopsis-informations">' . "\n";
 echo "<h3>Informations sur l'espace de cours</h3>\n";
-html_table_informations($course);
+echo $report->get_table_informations($course);
 echo '</div>' . "\n";
 
 echo '<div id="synopsis-rattachements">' . "\n";
 echo "<h3>Rattachements à l'offre de formation</h3>\n";
-html_table_rattachements($course);
+echo $report->get_table_rattachements($course);
 echo '</div>' . "\n";
 
 echo $OUTPUT->footer();
